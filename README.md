@@ -3,6 +3,8 @@
 This tool is a tool for debugging OASIS issues. It prints a formatted binary dump of the OASIS file.
 It supports CBLOCK unfolding.
 
+It is derived from KLayout's sources (www.klayout.org).
+
 ## Building
 
 A Makefile is provided for building the binary. The only requirement is gcc (to use clang edit the Makefile).
