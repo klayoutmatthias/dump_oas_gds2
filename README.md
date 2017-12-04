@@ -7,13 +7,19 @@ It is derived from KLayout's sources (www.klayout.org).
 
 ## Building
 
-A Makefile is provided for building the binary. The only requirement is gcc (to use clang edit the Makefile).
+A Makefile is provided for building the binary. The requirements are currently:
+
+ * gcc
+ * libz
+ * qt4 (core)
 
 In the source directory simply type
 
     make
 
 The output binary will be "dump_oas".
+
+If the build fails, check the Makefile - specifically for correct include paths for Qt4.
 
 On Windows, it is possible to build the tool using a Linux emulation shell (like MSYS2).
 
