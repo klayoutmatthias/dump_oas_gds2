@@ -30,7 +30,6 @@
 #include <sstream>
 
 #include "tlString.h"
-#include "tlInternational.h"
 
 static std::locale c_locale ("C");
 
@@ -124,6 +123,21 @@ static double local_strtod (const char *cp, const char *&cp_new)
 
 // -------------------------------------------------------------------------
 //  Implementation
+
+//  TODO: no translation provided currently
+std::string
+tl::translate (const std::string &s)
+{
+  return s;
+}
+
+//  TODO: no conversion provided currently
+//  This assumes the file system encoding is UTF-8
+std::string 
+tl::string_to_system (const std::string &s)
+{
+  return s;
+}
 
 std::string 
 tl::to_string (double d, int prec)

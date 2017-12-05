@@ -27,10 +27,20 @@
 namespace tl
 {
 
+// ------------------------------------------------------
+
 void
 Exception::init (const std::string &fmt, const std::vector<tl::Variant> &a)
 { 
   m_msg = tl::sprintf (fmt, a);
+}
+
+// ------------------------------------------------------
+
+InternalException::InternalException (const char *file, int line, const char *cond)
+    : Exception (tl::translate ("Internal error: %s:%d %s was not true").c_str (), file, line, cond)
+{
+  //  .. nothing yet ..
 }
 
 }

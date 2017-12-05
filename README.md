@@ -1,36 +1,42 @@
-# dump_oas - a binary dump utility for OASIS (chip layout data) files 
+# dump_oas and dump_gds2 - binary dump utilities for OASIS and GDS2 (chip layout data) files 
 
-This tool is a tool for debugging OASIS issues. It prints a formatted binary dump of the OASIS file.
-It supports CBLOCK unfolding.
+This tool is a tool for debugging OASIS and GDS2 issues. They print a formatted binary dump of the file.
 
-It is derived from KLayout's sources (www.klayout.org).
+ * "dump_oas" is for dumping OASIS files. It supports CBLOCK unfolding.
+
+ * "dump_gds2" is for dumping GDS2 files.
+
+Both tools are derived from KLayout's sources (www.klayout.org).
 
 ## Building
 
-A Makefile is provided for building the binary. The requirements are currently:
+A Makefile is provided for building the binaries. The requirements are currently:
 
- * gcc
+ * gcc/g++
  * libz
- * qt4 (core)
 
 In the source directory simply type
 
     make
 
-The output binary will be "dump_oas".
-
-If the build fails, check the Makefile - specifically for correct include paths for Qt4.
+The output binary will be "dump_oas" and "dump_gds2".
 
 On Windows, it is possible to build the tool using a Linux emulation shell (like MSYS2).
 
 ## Usage
 
-The usage is simply
+The usage of the tools is simply
 
     dump_oas <path-to-oasis-file>
+    dump_gds2 <path-to-gds2-file>
 
+Further options are:
 
-## Sample Output
+ * *-h* to print the help text
+ * *-s* for short output (no multiline hex dump)
+ * *-n <num>* to set the number of bytes per line
+
+## Sample Output of "dump_oas"
 
 ```
 000000000   25 53 45 4d 49 2d 4f 41  magic bytes
@@ -123,4 +129,44 @@ The usage is simply
 000000428                            tail
 ```
 
+## Sample Output of "dump_gds2"
 
+```
+000000000   00 06 00 02              HEADER
+000000004   02 58                      600
+000000006   00 1c 01 02              BGNLIB
+000000010   07 e0 00 0c 00 07 00 17    2016-12-07 23:16:57
+000000018 + 00 10 00 39 
+000000022   07 e0 00 0c 00 07 00 17    2016-12-07 23:16:57
+000000030 + 00 10 00 39 
+000000034   00 08 02 06              LIBNAME
+000000038   4c 49 42 00                "LIB"
+000000042   00 14 03 05              UNITS
+000000046   3e 41 89 37 4b c6 a7 f0    0.001
+000000054   39 44 b8 2f a0 9b 5a 54    1e-09
+000000062   00 1c 05 02              BGNSTR
+000000066   07 e0 00 0c 00 07 00 17    2016-12-07 23:16:57
+000000074 + 00 10 00 39 
+000000078   07 e0 00 0c 00 07 00 17    2016-12-07 23:16:57
+000000086 + 00 10 00 39 
+000000090   00 08 06 06              STRNAME
+000000094   54 4f 50 00                "TOP"
+000000098   00 04 08 00              BOUNDARY
+000000102   00 06 0d 02              LAYER
+000000106   00 01                      1
+000000108   00 06 0e 02              DATATYPE
+000000112   00 64                      100
+000000114   00 4c 10 03              XY
+000000118   00 4b e9 98 ff 67 69 80    4975000,-10000000
+000000126   00 4b e9 98 ff f9 e5 80    4975000,-400000
+000000134   ff ad fb e8 ff f9 e5 80    -5375000,-400000
+000000142   ff ad fb e8 00 00 00 00    -5375000,0
+000000150   00 4b e9 98 00 00 00 00    4975000,0
+000000158   00 4b e9 98 00 98 96 80    4975000,10000000
+000000166   00 52 04 18 00 98 96 80    5375000,10000000
+000000174   00 52 04 18 ff 67 69 80    5375000,-10000000
+000000182   00 4b e9 98 ff 67 69 80    4975000,-10000000
+000000190   00 04 11 00              ENDEL
+000000194   00 04 07 00              ENDSTR
+000000198   00 04 04 00              ENDLIB
+```

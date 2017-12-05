@@ -27,7 +27,6 @@
 
 #include "config.h"
 
-#include "tlInternational.h"
 #include "tlVariant.h"
 
 namespace tl
@@ -139,9 +138,7 @@ private:
 struct InternalException
   : public Exception
 {
-  InternalException (const char *file, int line, const char *cond)
-    : Exception (tl::translate ("Internal error: %s:%d %s was not true").c_str (), file, line, cond)
-  { }
+  InternalException (const char *file, int line, const char *cond);
 };
 
 } // namespace tl

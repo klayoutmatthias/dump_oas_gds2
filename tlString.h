@@ -355,6 +355,17 @@ inline std::string db_to_string (int64_t d)
 }
 
 /**
+ *  @brief A hook for translating text
+ */
+std::string translate (const std::string &s);
+
+/**
+ *  @brief Converts a string (i.e. UTF-8) to the system's encoding
+ *  Used for translating std::string into file system paths.
+ */
+std::string string_to_system (const std::string &s);
+
+/**
  *  @brief A generic extractor (parser) class
  *
  *  This class acts like a stream of which elements can be extracted on

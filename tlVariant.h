@@ -30,10 +30,7 @@
 #include <map>
 #include <stdexcept>
 
-#include "tlInternational.h"
 #include "tlAssert.h"
-
-#include <QtCore/QString>
 
 namespace tl
 {
@@ -272,7 +269,6 @@ public:
     t_double, 
     t_string, 
     t_stdstring, 
-    t_qstring, 
     t_list, 
     t_array, 
     //  "complex types": these are types which are basically predefined user types.
@@ -310,11 +306,6 @@ public:
    *  @brief Copy ctor
    */
   Variant (const tl::Variant &d);
-
-  /**
-   *  @brief Initialize the Variant with a QString
-   */
-  Variant (const QString &s);
 
   /**
    *  @brief Initialize the Variant with "string"
@@ -452,11 +443,6 @@ public:
    *  @brief Assignment of a string
    */
   Variant &operator= (const char *v);
-
-  /**
-   *  @brief Assignment of a string
-   */
-  Variant &operator= (const QString &v);
 
   /**
    *  @brief Assignment of a string
@@ -628,17 +614,9 @@ public:
   const char *to_string () const;
 
   /**
-   *  @brief Conversion to a QString
-   *
-   *  This performs the conversion to a QString as far as possible.
-   *  No conversion is provided to user types currently.
-   */
-  QString to_qstring () const;
-
-  /**
    *  @brief Conversion to a std::string
    *
-   *  This performs the conversion to a QString as far as possible.
+   *  This performs the conversion to a std::string as far as possible.
    *  No conversion is provided to user types currently.
    */
   std::string to_stdstring () const;
@@ -1315,14 +1293,6 @@ public:
   }
 
   /**
-   *  @brief Test, if it is a QString
-   */
-  bool is_qstring () const
-  {
-    return m_type == t_qstring;
-  }
-
-  /**
    *  @brief Test, if it is a std::string
    */
   bool is_stdstring () const
@@ -1343,7 +1313,7 @@ public:
    */
   bool is_a_string () const
   {
-    return m_type == t_qstring || m_type == t_string || m_type == t_stdstring;
+    return m_type == t_string || m_type == t_stdstring;
   }
 
   /**
@@ -1491,7 +1461,6 @@ private:
       void *object;
       const VariantUserClassBase *cls;
     } mp_user;
-    QString *m_qstring;
     std::string *m_stdstring;
   } m_var;
 
@@ -1515,7 +1484,6 @@ template<> inline unsigned long long Variant::to<unsigned long long> () const   
 template<> inline double Variant::to<double> () const                             { return to_double (); }
 template<> inline float Variant::to<float> () const                               { return to_float (); }
 template<> inline std::string Variant::to<std::string> () const                   { return to_stdstring (); }
-template<> inline QString Variant::to<QString> () const                           { return to_qstring (); }
 template<> inline const char *Variant::to<const char *> () const                  { return to_string (); }
 
 //  specializations if the is.. methods
@@ -1534,7 +1502,6 @@ template<> inline bool Variant::is<unsigned long long> () const   { return is_ul
 template<> inline bool Variant::is<double> () const               { return is_double (); }
 template<> inline bool Variant::is<float> () const                { return is_float (); }
 template<> inline bool Variant::is<std::string> () const          { return is_stdstring (); }
-template<> inline bool Variant::is<QString> () const              { return is_qstring (); }
 template<> inline bool Variant::is<const char *> () const         { return is_cstring (); }
 
 //  specializations of the can_convert.. methods
@@ -1553,7 +1520,6 @@ template<> inline bool Variant::can_convert_to<unsigned long long> () const   { 
 template<> inline bool Variant::can_convert_to<double> () const               { return can_convert_to_double (); }
 template<> inline bool Variant::can_convert_to<float> () const                { return can_convert_to_float (); }
 template<> inline bool Variant::can_convert_to<std::string> () const          { return true; }
-template<> inline bool Variant::can_convert_to<QString> () const              { return true; }
 template<> inline bool Variant::can_convert_to<const char *> () const         { return true; }
 
 /**

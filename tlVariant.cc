@@ -21,7 +21,6 @@
 
 
 #include "tlVariant.h"
-#include "tlInternational.h"
 #include "tlString.h"
 
 #include <string.h>
@@ -65,12 +64,6 @@ Variant::Variant ()
   : m_type (t_nil), m_string (0)
 {
   // .. nothing yet ..
-}
-
-Variant::Variant (const QString &qs) 
-  : m_type (t_qstring), m_string (0)
-{
-  m_var.m_qstring = new QString (qs);
 }
 
 Variant::Variant (const std::string &s) 
@@ -198,8 +191,6 @@ Variant::reset ()
     delete m_var.m_list;
   } else if (m_type == t_array) {
     delete m_var.m_array;
-  } else if (m_type == t_qstring) {
-    delete m_var.m_qstring;
   } else if (m_type == t_stdstring) {
     delete m_var.m_stdstring;
   } else if (is_user () || is_complex ()) {
@@ -235,20 +226,6 @@ Variant::operator= (const std::string &s)
     reset ();
     m_type = t_stdstring;
     m_var.m_stdstring = snew;
-  }
-  return *this;
-}
-
-Variant &
-Variant::operator= (const QString &qs)
-{
-  if (m_type == t_qstring && &qs == m_var.m_qstring) {
-    //  we are assigning to ourselves
-  } else {
-    QString *snew = new QString (qs);
-    reset ();
-    m_type = t_qstring;
-    m_var.m_qstring = snew;
   }
   return *this;
 }
@@ -417,8 +394,6 @@ Variant::operator= (const Variant &v)
       m_var.m_ulonglong = v.m_var.m_ulonglong;
     } else if (m_type == t_id) {
       m_var.m_id = v.m_var.m_id;
-    } else if (m_type == t_qstring) {
-      m_var.m_qstring = new QString (*v.m_var.m_qstring);
     } else if (m_type == t_stdstring) {
       m_var.m_stdstring = new std::string (*v.m_var.m_stdstring);
     } else if (m_type == t_string) {
@@ -467,7 +442,6 @@ normalized_type (Variant::type type)
   case Variant::t_ulonglong:
   case Variant::t_bool:
   case Variant::t_nil:
-  case Variant::t_qstring:
     return type;
   }
 }
@@ -492,8 +466,6 @@ normalized_type (Variant::type type1, Variant::type type2)
     return std::make_pair (true, Variant::t_long);
   } else if (type1 == Variant::t_ulong || type2 == Variant::t_ulong) {
     return std::make_pair (true, Variant::t_ulong);
-  } else if (type1 == Variant::t_qstring || type2 == Variant::t_qstring) {
-    return std::make_pair (true, Variant::t_qstring);
   } else {
     return std::make_pair (type1 == type2, type1);
   }
@@ -527,8 +499,6 @@ Variant::operator== (const tl::Variant &d) const
     return to_double () == d.to_double ();
   } else if (t == t_string) {
     return strcmp (to_string (), d.to_string ()) == 0;
-  } else if (t == t_qstring) {
-    return *m_var.m_qstring == *d.m_var.m_qstring;
   } else if (t == t_list) {
     return *m_var.m_list == *d.m_var.m_list;
   } else if (t == t_array) {
@@ -568,8 +538,6 @@ Variant::operator< (const tl::Variant &d) const
     return to_double () < d.to_double ();
   } else if (t == t_string) {
     return strcmp (to_string (), d.to_string ()) < 0;
-  } else if (t == t_qstring) {
-    return *m_var.m_qstring < *d.m_var.m_qstring;
   } else if (t == t_list) {
     return *m_var.m_list < *d.m_var.m_list;
   } else if (t == t_array) {
@@ -606,7 +574,6 @@ Variant::can_convert_to_float () const
     return true;
   case t_double:
     return m_var.m_double < std::numeric_limits<float>::max () && m_var.m_double > std::numeric_limits<float>::min ();
-  case t_qstring:
   case t_stdstring:
   case t_string:
     {
@@ -639,7 +606,6 @@ Variant::can_convert_to_double () const
   case t_bool:
   case t_nil:
     return true;
-  case t_qstring:
   case t_stdstring:
   case t_string:
     {
@@ -681,7 +647,6 @@ Variant::can_convert_to_ulonglong () const
   case t_int:
     return m_var.m_int >= 0;
   case t_string:
-  case t_qstring:
   case t_stdstring:
     {
       tl::Extractor ex (to_string ());
@@ -717,7 +682,6 @@ Variant::can_convert_to_longlong () const
   case t_nil:
     return true;
   case t_string:
-  case t_qstring:
   case t_stdstring:
     {
       tl::Extractor ex (to_string ());
@@ -759,7 +723,6 @@ Variant::can_convert_to_ulong () const
   case t_int:
     return m_var.m_int >= 0;
   case t_string:
-  case t_qstring:
   case t_stdstring:
     {
       tl::Extractor ex (to_string ());
@@ -797,7 +760,6 @@ Variant::can_convert_to_long () const
   case t_nil:
     return true;
   case t_string:
-  case t_qstring:
   case t_stdstring:
     {
       tl::Extractor ex (to_string ());
@@ -849,16 +811,6 @@ bool
 Variant::can_convert_to_uchar () const
 {
   return can_convert_to_long () && (to_short () <= (long) std::numeric_limits<unsigned char>::max () && to_short () >= (long) std::numeric_limits<unsigned char>::min ());
-}
-
-QString
-Variant::to_qstring () const
-{
-  if (m_type == t_qstring) {
-    return *m_var.m_qstring;
-  } else {
-    return tl::to_qstring (to_string ());
-  }
 }
 
 std::string
@@ -913,8 +865,6 @@ Variant::to_string () const
       r = tl::to_string (m_var.m_ulonglong);
     } else if (m_type == t_bool) {
       r = tl::to_string (m_var.m_bool);
-    } else if (m_type == t_qstring) {
-      r = tl::to_string (*m_var.m_qstring);
     } else if (m_type == t_list) {
       for (std::vector<tl::Variant>::const_iterator v = m_var.m_list->begin (); v != m_var.m_list->end (); ++v) {
         if (v != m_var.m_list->begin ()) {
@@ -996,7 +946,7 @@ Variant::to_ulonglong () const
     unsigned long long l = 0;
     tl::from_string (*m_var.m_stdstring, l);
     return l;
-  } else if (m_type == t_string || m_type == t_qstring) {
+  } else if (m_type == t_string) {
     unsigned long long l = 0;
     tl::from_string (to_string (), l);
     return l;
@@ -1042,7 +992,7 @@ Variant::to_longlong () const
     long long l = 0;
     tl::from_string (*m_var.m_stdstring, l);
     return l;
-  } else if (m_type == t_string || m_type == t_qstring) {
+  } else if (m_type == t_string) {
     long long l = 0;
     tl::from_string (to_string (), l);
     return l;
@@ -1088,7 +1038,7 @@ Variant::to_ulong () const
     unsigned long l = 0;
     tl::from_string (*m_var.m_stdstring, l);
     return l;
-  } else if (m_type == t_string || m_type == t_qstring) {
+  } else if (m_type == t_string) {
     unsigned long l = 0;
     tl::from_string (to_string (), l);
     return l;
@@ -1134,7 +1084,7 @@ Variant::to_long () const
     long l = 0;
     tl::from_string (*m_var.m_stdstring, l);
     return l;
-  } else if (m_type == t_string || m_type == t_qstring) {
+  } else if (m_type == t_string) {
     long l = 0;
     tl::from_string (to_string (), l);
     return l;
@@ -1232,7 +1182,7 @@ Variant::to_double () const
     double d = 0;
     tl::from_string (*m_var.m_stdstring, d);
     return d;
-  } else if (m_type == t_string || m_type == t_qstring) {
+  } else if (m_type == t_string) {
     double d = 0;
     tl::from_string (to_string (), d);
     return d;
@@ -1285,8 +1235,6 @@ Variant::native_ptr () const
     return &m_var.m_uint;
   case t_string:
     return m_string;
-  case t_qstring:
-    return m_var.m_qstring;
   case t_stdstring:
     return m_var.m_stdstring;
   case t_array:
@@ -1366,7 +1314,7 @@ Variant::to_parsable_string () const
     return "nil";
   } else if (is_stdstring ()) {
     return tl::to_quoted_string (*m_var.m_stdstring);
-  } else if (is_cstring () || is_qstring ()) {
+  } else if (is_cstring ()) {
     return tl::to_quoted_string (to_string ());
   } else if (is_list ()) {
     std::string r = "(";
